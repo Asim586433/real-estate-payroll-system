@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, employees, InsertEmployee, transactions, InsertTransaction, payments, InsertPayment, commissionRates, taxSettings, payrollPeriods, InsertPayrollPeriod } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,121 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getEmployees() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(employees).orderBy(employees.createdAt);
+}
+
+export async function getEmployeeById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(employees).where(eq(employees.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createEmployee(data: InsertEmployee) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(employees).values(data);
+  return result;
+}
+
+export async function updateEmployee(id: number, data: Partial<InsertEmployee>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(employees).set(data).where(eq(employees.id, id));
+}
+
+export async function getTransactions(employeeId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  if (employeeId) {
+    return db.select().from(transactions).where(eq(transactions.employeeId, employeeId)).orderBy(transactions.transactionDate);
+  }
+  return db.select().from(transactions).orderBy(transactions.transactionDate);
+}
+
+export async function getTransactionById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(transactions).where(eq(transactions.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createTransaction(data: InsertTransaction) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(transactions).values(data);
+}
+
+export async function updateTransaction(id: number, data: Partial<InsertTransaction>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(transactions).set(data).where(eq(transactions.id, id));
+}
+
+export async function getPayments(employeeId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  if (employeeId) {
+    return db.select().from(payments).where(eq(payments.employeeId, employeeId)).orderBy(payments.createdAt);
+  }
+  return db.select().from(payments).orderBy(payments.createdAt);
+}
+
+export async function getPaymentById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(payments).where(eq(payments.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createPayment(data: InsertPayment) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(payments).values(data);
+}
+
+export async function updatePayment(id: number, data: Partial<InsertPayment>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(payments).set(data).where(eq(payments.id, id));
+}
+
+export async function getCommissionRates() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(commissionRates).where(eq(commissionRates.isActive, 1));
+}
+
+export async function getTaxSettings() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(taxSettings).where(eq(taxSettings.isActive, 1));
+}
+
+export async function getPayrollPeriods() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(payrollPeriods).orderBy(payrollPeriods.startDate);
+}
+
+export async function getPayrollPeriodById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(payrollPeriods).where(eq(payrollPeriods.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createPayrollPeriod(data: InsertPayrollPeriod) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(payrollPeriods).values(data);
+}
+
+export async function updatePayrollPeriod(id: number, data: Partial<InsertPayrollPeriod>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(payrollPeriods).set(data).where(eq(payrollPeriods.id, id));
+}
