@@ -93,3 +93,13 @@
 - [ ] Final code review
 - [ ] Create deployment checkpoint
 - [ ] Deploy to production
+
+
+## Dummy Data Population
+- [x] Create seed script for dummy data
+- [x] Populate sample employees (10-15 agents)
+- [x] Add sample commission rates
+- [x] Add sample tax settings
+- [x] Generate sample transactions (50+ sales)
+- [x] Generate sample payments
+- [x] Create sample payroll periods
